@@ -25,24 +25,27 @@ public class EmployeeController {
         this.employeeRepository = employeeRepository;
     }
 
+    // GET all employees
     @GetMapping
-    public List<Employee> getAllEmployees() {
+    public List<Employee> getEmployees() {
         return employeeRepository.findAll();
     }
 
+    // GET employee by ID
     @GetMapping("/{id}")
     public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
-
         return employeeRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // CREATE employee
     @PostMapping
     public Employee createEmployee(@RequestBody Employee employee) {
         return employeeRepository.save(employee);
     }
 
+    // UPDATE employee
     @PutMapping("/{id}")
     public ResponseEntity<Employee> updateEmployee(
             @PathVariable Long id,
@@ -50,16 +53,18 @@ public class EmployeeController {
 
         return employeeRepository.findById(id)
                 .map(employee -> {
-
                     employee.setName(employeeDetails.getName());
                     employee.setEmail(employeeDetails.getEmail());
                     employee.setDepartment(employeeDetails.getDepartment());
 
-                    return ResponseEntity.ok(employeeRepository.save(employee));
+                    Employee updatedEmployee = employeeRepository.save(employee);
+
+                    return ResponseEntity.ok(updatedEmployee);
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // DELETE employee
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
 
@@ -70,5 +75,11 @@ public class EmployeeController {
         employeeRepository.deleteById(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    // CI/CD deployment status endpoint
+    @GetMapping("/status")
+    public String status() {
+        return "Employee API - CI/CD Deployment Successful!";
     }
 }
